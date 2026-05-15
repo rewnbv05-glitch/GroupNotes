@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Групповой конспект</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <section id="authScreen" class="auth-screen" aria-label="Вход в приложение">
+      <div class="welcome-panel">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">GK</div>
+          <div>
+            <p class="workspace-label">Учебная группа</p>
+            <h1>Групповой конспект</h1>
+          </div>
+        </div>
+        <div class="welcome-copy">
+          <p class="eyebrow">Совместная работа с конспектами</p>
+          <h2>Добро пожаловать</h2>
+          <p>Войдите в аккаунт, чтобы открыть комнаты учебной группы и продолжить работу с материалами.</p>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist" aria-label="Режим авторизации">
+          <button id="loginTab" class="auth-tab active" type="button">Вход</button>
+          <button id="registerTab" class="auth-tab" type="button">Регистрация</button>
+        </div>
+
+        <form id="authForm" class="auth-form">
+          <div id="authNameField" class="field" hidden>
+            <label for="authName">Имя участника</label>
+            <input id="authName" type="text" autocomplete="name" maxlength="32" placeholder="Например, Аня">
+          </div>
+          <div class="field">
+            <label for="authLogin">Логин или email</label>
+            <input id="authLogin" type="text" autocomplete="username" maxlength="64" required>
+          </div>
+          <div class="field">
+            <label for="authPassword">Пароль</label>
+            <input id="authPassword" type="password" autocomplete="current-password" minlength="4" maxlength="64" required>
+          </div>
+          <div id="authPasswordConfirmField" class="field" hidden>
+            <label for="authPasswordConfirm">Подтверждение пароля</label>
+            <input id="authPasswordConfirm" type="password" autocomplete="new-password" minlength="4" maxlength="64">
+          </div>
+          <button id="authSubmitButton" class="primary-button" type="submit">Войти</button>
+          <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <div id="appShell" class="app-shell" hidden>
+      <aside class="sidebar" aria-label="Навигация по конспектам">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">GK</div>
+          <div>
+            <p class="workspace-label">Учебная группа</p>
+            <h1>Групповой конспект</h1>
+          </div>
+        </div>
+
+        <div class="room-summary">
+          <span id="currentRoomName">Комната</span>
+          <button id="copyRoomCodeSmallButton" class="code-pill" type="button" title="Скопировать код комнаты">
+            <span id="currentRoomCodeSmall">------</span>
+          </button>
+        </div>
+
+        <div class="user-switcher">
+          <label for="userName">Участник</label>
+          <div class="input-row">
+            <input id="userName" type="text" autocomplete="off" maxlength="32">
+            <span id="userAvatar" class="avatar" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="toolbar-block">
+          <button id="newNoteButton" class="primary-button" type="button">
+            <span aria-hidden="true">+</span>
+            Новый конспект
+          </button>
+        </div>
+
+        <div class="filter-block">
+          <label for="searchInput">Поиск</label>
+          <input id="searchInput" type="search" placeholder="Тема, тег, текст">
+          <label for="subjectFilter">Дисциплина</label>
+          <select id="subjectFilter"></select>
+        </div>
+
+        <form id="subjectForm" class="subject-form">
+          <label for="newSubjectInput">Своя дисциплина</label>
+          <div class="input-row">
+            <input id="newSubjectInput" type="text" maxlength="48" placeholder="Например, Физика">
+            <button class="square-button" type="submit" aria-label="Добавить дисциплину">+</button>
+          </div>
+          <div id="subjectChips" class="subject-chips" aria-label="Дисциплины комнаты"></div>
+        </form>
+
+        <div class="note-list-header">
+          <span>Конспекты</span>
+          <button id="resetHistoryButton" class="ghost-button compact" type="button" title="Сбросить историю текущей комнаты">Сброс</button>
+        </div>
+        <div id="noteList" class="note-list" role="list"></div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p id="syncStatus" class="sync-status">Сохранено</p>
+            <h2 id="currentNoteHeading">Конспект</h2>
+            <p id="roomInfo" class="room-info">Комната</p>
+          </div>
+          <div class="topbar-actions">
+            <button id="roomButton" class="ghost-button" type="button">Комната</button>
+            <button id="saveFileButton" class="ghost-button" type="button">Сохранить</button>
+            <label class="icon-button file-button" title="Импорт JSON" aria-label="Импорт JSON">
+              IN
+              <input id="importJsonInput" type="file" accept="application/json">
+            </label>
+            <button id="logoutButton" class="ghost-button" type="button">Выйти</button>
+            <button id="deleteNoteButton" class="danger-button" type="button">Удалить</button>
+          </div>
+        </header>
+
+        <section class="editor-panel" aria-label="Редактор конспекта">
+          <div class="meta-grid">
+            <div class="field title-field">
+              <label for="noteTitle">Тема</label>
+              <input id="noteTitle" type="text" maxlength="96">
+            </div>
+            <div class="field">
+              <label for="noteSubject">Дисциплина</label>
+              <input id="noteSubject" type="text" maxlength="48" list="subjectSuggestions">
+              <datalist id="subjectSuggestions"></datalist>
+            </div>
+            <div class="field">
+              <label for="noteTags">Теги</label>
+              <input id="noteTags" type="text" maxlength="120" placeholder="лекция, экзамен">
+            </div>
+          </div>
+
+          <div id="tagCloud" class="tag-cloud" aria-label="Теги конспекта"></div>
+
+          <div class="editor-grid">
+            <label class="editor-column">
+              <span>Текст</span>
+              <textarea id="noteContent" spellcheck="true"></textarea>
+            </label>
+            <section class="preview-column" aria-label="Предпросмотр">
+              <div class="preview-heading">Предпросмотр</div>
+              <div id="preview" class="preview"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <aside class="collab-panel" aria-label="Совместная работа">
+        <section class="side-section">
+          <div class="section-heading">
+            <h3>Участники</h3>
+            <span id="presenceCount" class="metric">1</span>
+          </div>
+          <div id="presenceList" class="presence-list"></div>
+        </section>
+
+        <section class="side-section">
+          <div class="section-heading">
+            <h3>Задачи</h3>
+            <span id="openTasksCount" class="metric">0</span>
+          </div>
+          <form id="taskForm" class="inline-form">
+            <input id="taskInput" type="text" maxlength="96" placeholder="Что уточнить">
+            <button class="square-button" type="submit" aria-label="Добавить задачу">+</button>
+          </form>
+          <div id="taskList" class="task-list"></div>
+        </section>
+
+        <section class="side-section">
+          <div class="section-heading">
+            <h3>Комментарии</h3>
+            <span id="commentsCount" class="metric">0</span>
+          </div>
+          <form id="commentForm" class="comment-form">
+            <textarea id="commentInput" maxlength="280" placeholder="Комментарий"></textarea>
+            <button class="primary-button" type="submit">Добавить</button>
+          </form>
+          <div id="commentList" class="comment-list"></div>
+        </section>
+
+        <section class="side-section">
+          <div class="section-heading">
+            <h3>История</h3>
+            <span id="historyCount" class="metric">0</span>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </section>
+      </aside>
+    </div>
+
+    <div id="roomModal" class="modal-backdrop" hidden>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="roomModalTitle">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Комнаты конспектов</p>
+            <h2 id="roomModalTitle">Создание и подключение</h2>
+          </div>
+          <button id="closeRoomModalButton" class="icon-button" type="button" aria-label="Закрыть">X</button>
+        </div>
+
+        <div class="room-grid">
+          <form id="createRoomForm" class="room-form">
+            <h3>Создать комнату</h3>
+            <label for="roomNameInput">Название комнаты</label>
+            <input id="roomNameInput" type="text" maxlength="48" placeholder="Например, ИС-23 Материалы">
+            <button class="primary-button" type="submit">Создать комнату</button>
+          </form>
+
+          <form id="joinRoomForm" class="room-form">
+            <h3>Подключиться</h3>
+            <label for="joinRoomCodeInput">Код комнаты</label>
+            <input id="joinRoomCodeInput" type="text" maxlength="12" placeholder="GK-123456">
+            <button class="ghost-button" type="submit">Войти по коду</button>
+          </form>
+        </div>
+
+        <div id="roomResult" class="room-result" hidden>
+          <span>Код подключения</span>
+          <strong id="createdRoomCode">------</strong>
+          <div class="modal-actions">
+            <button id="copyRoomCodeButton" class="ghost-button" type="button">Скопировать код</button>
+            <button id="openRoomButton" class="primary-button" type="button">Открыть комнату</button>
+          </div>
+        </div>
+
+        <p id="roomMessage" class="form-message" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <div id="saveModal" class="modal-backdrop" hidden>
+      <section class="modal-card save-modal" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Сохранение файла</p>
+            <h2 id="saveModalTitle">Параметры экспорта</h2>
+          </div>
+          <button id="closeSaveModalButton" class="icon-button" type="button" aria-label="Закрыть">X</button>
+        </div>
+
+        <form id="saveForm" class="save-form">
+          <div class="field">
+            <label for="saveFileName">Название файла</label>
+            <input id="saveFileName" type="text" maxlength="80" placeholder="Название файла">
+          </div>
+          <div class="field">
+            <label for="saveFormat">Формат</label>
+            <select id="saveFormat">
+              <option value="markdown">Markdown текущего конспекта (.md)</option>
+              <option value="json">JSON всей комнаты (.json)</option>
+            </select>
+          </div>
+          <div class="modal-actions">
+            <button id="cancelSaveButton" class="ghost-button" type="button">Отмена</button>
+            <button class="primary-button" type="submit">Сохранить файл</button>
+          </div>
+          <p id="saveMessage" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
